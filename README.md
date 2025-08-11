@@ -1,35 +1,45 @@
-# Marktplaats Login App
+# Marktplaats Bot
 
-This repository provides a simple Python script that logs in to [Marktplaats](https://www.marktplaats.nl/) using credentials stored in a `.env` file.  A minimal Flask web interface is included so the script can be run as a small website.
+Automates searching for listings (e.g., broken coffee machines), evaluates them with
+Gemini, messages the seller, negotiates, and notifies when a deal is reached.
+
+> ⚠️ Use responsibly and check that automation is allowed by Marktplaats’s terms of service.
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and fill in your email and password.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the script directly:
-   ```bash
-   python login.py
-   ```
+```bash
+git clone <your_repo_url>
+cd <repo>
+cp .env.example .env   # fill in credentials and Gemini key
+pip install -r requirements.txt
+```
 
-## Run the web app
-
-Start the Flask web server:
+Run locally:
 
 ```bash
 flask --app app run
+# browse http://localhost:5000
 ```
 
-Visit <http://localhost:5000> to use the login form.  The page posts to `/login` and displays the status code and response body.
+Deploy on Render:
 
-## Deploy on Render (free tier)
+1. Push repository to GitHub.
+2. Create a Web Service on Render connected to the repo.
+3. Build command: `pip install -r requirements.txt`
+4. Start command: `gunicorn app:app`
+5. Add environment variables in Render dashboard (email, password, gemini key).
+6. After deploy, open the service URL.
 
-1. Push this repository to GitHub.
-2. Create an account at [Render](https://render.com/) and select **New Web Service**.
-3. Connect the GitHub repository.
-4. Use the following settings:
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn app:app`
-5. After deployment, the site will be accessible at the URL provided by Render.
+## Usage
+
+- Visit `/` and enter a keyword (e.g., “koffiemachine”).
+- The bot logs in, searches listings, uses Gemini to assess quality, and messages sellers.
+- Call `/check` periodically (or set a cron job) to poll for replies and continue
+  negotiation.
+- When a deal is reached, it prints a message (extend with email, Slack, etc.).
+
+## Notes
+
+This is a minimal demonstration. You may need to adapt selectors, endpoints, or handling
+logic if Marktplaats changes its layout or security measures. The negotiation logic is
+simple and may require improvement for real-world use.

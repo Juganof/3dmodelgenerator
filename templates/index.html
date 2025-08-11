@@ -1,29 +1,15 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Marktplaats Login</title>
-</head>
-<body>
-    <h1>Marktplaats Login</h1>
-    <form id="login-form">
-        <label>Email: <input type="email" name="email" required></label><br>
-        <label>Password: <input type="password" name="password" required></label><br>
-        <button type="submit">Login</button>
+  <head>
+    <meta charset="utf-8" />
+    <title>Marktplaats Bot</title>
+  </head>
+  <body>
+    <h1>Marktplaats Bot</h1>
+    <form action="/search" method="post">
+      <input type="text" name="keyword" placeholder="zoekwoord bv. koffiemachine" />
+      <button type="submit">Search & Analyse</button>
     </form>
-    <pre id="result"></pre>
-    <script>
-        const form = document.getElementById('login-form');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const resp = await fetch('/login', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await resp.json();
-            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
-        });
-    </script>
-</body>
+    <p>Use /check endpoint to poll for negotiation status.</p>
+  </body>
 </html>
