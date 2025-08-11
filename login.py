@@ -12,6 +12,11 @@ load_dotenv()
 
 LOGIN_PAGE = "https://www.marktplaats.nl/identity/v2/login"
 LOGIN_API = "https://www.marktplaats.nl/identity/v2/api/login"
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/122.0.0.0 Safari/537.36"
+)
 
 
 def perform_login(email: str, password: str) -> dict:
@@ -36,6 +41,12 @@ def perform_login(email: str, password: str) -> dict:
         screenshots.append(base64.b64encode(buf.getvalue()).decode("utf-8"))
 
     session = requests.Session()
+    # Pretend to be a regular browser.  Some endpoints respond with 403 when
+    # the default ``python-requests`` user agent is used.
+    session.headers.update({
+        "User-Agent": USER_AGENT,
+        "Accept": "application/json, text/plain, */*",
+    })
 
     _snapshot("Fetching login page")
     # Fetch login page to obtain xsrf token and threatMetrix information
@@ -69,6 +80,8 @@ def perform_login(email: str, password: str) -> dict:
     headers = {
         "Content-Type": "application/json",
         "X-XSRF-TOKEN": xsrf_token,
+        "Referer": LOGIN_PAGE,
+        "Origin": "https://www.marktplaats.nl",
     }
 
     _snapshot("Submitting credentials")
