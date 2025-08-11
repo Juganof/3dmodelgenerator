@@ -1,7 +1,11 @@
-from flask import Flask, jsonify, render_template, request
-from bot import MarktplaatsBot
 import os
 
+from flask import Flask, jsonify, render_template, request
+from dotenv import load_dotenv
+
+from bot import MarktplaatsBot
+
+load_dotenv()
 app = Flask(__name__)
 bot = MarktplaatsBot()
 
@@ -18,12 +22,6 @@ def search():
         return jsonify({"error": "keyword required"}), 400
     listings = bot.search_and_analyze(keyword)
     return jsonify({"results": listings})
-
-
-@app.route("/check", methods=["GET"])
-def check():
-    bot.check_negotiations()
-    return jsonify({"status": "checked"})
 
 
 if __name__ == "__main__":
