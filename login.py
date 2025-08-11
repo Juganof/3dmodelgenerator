@@ -1,8 +1,12 @@
 import os
 import json
 import re
+import base64
+import io
+
 import requests
 from dotenv import load_dotenv
+from PIL import Image, ImageDraw
 
 load_dotenv()
 
@@ -11,12 +15,29 @@ LOGIN_API = "https://www.marktplaats.nl/identity/v2/api/login"
 
 
 def perform_login(email: str, password: str) -> dict:
-    """Attempt to log in to Marktplaats with provided credentials."""
+    """Attempt to log in to Marktplaats with provided credentials.
+
+    During the login flow we generate simple screenshot images that describe
+    what the function is doing.  The images are returned as base64 strings so
+    the frontend can display them to the user as progress screenshots.
+    """
     if not email or not password:
         raise ValueError("Email and password are required")
 
+    screenshots = []
+
+    def _snapshot(text: str) -> None:
+        """Create a small image containing the given text and store it."""
+        img = Image.new("RGB", (400, 120), color="white")
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 50), text, fill="black")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        screenshots.append(base64.b64encode(buf.getvalue()).decode("utf-8"))
+
     session = requests.Session()
 
+    _snapshot("Fetching login page")
     # Fetch login page to obtain xsrf token and threatMetrix information
     resp = session.get(LOGIN_PAGE)
     resp.raise_for_status()
@@ -50,8 +71,11 @@ def perform_login(email: str, password: str) -> dict:
         "X-XSRF-TOKEN": xsrf_token,
     }
 
+    _snapshot("Submitting credentials")
     resp = session.post(LOGIN_API, json=payload, headers=headers)
-    return {"status_code": resp.status_code, "text": resp.text}
+
+    _snapshot(f"Received {resp.status_code}")
+    return {"status_code": resp.status_code, "text": resp.text, "screenshots": screenshots}
 
 
 if __name__ == "__main__":

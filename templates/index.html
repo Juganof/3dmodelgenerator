@@ -12,6 +12,7 @@
         <button type="submit">Login</button>
     </form>
     <pre id="result"></pre>
+    <div id="screenshots"></div>
     <script>
         const form = document.getElementById('login-form');
         form.addEventListener('submit', async (e) => {
@@ -23,6 +24,18 @@
             });
             const data = await resp.json();
             document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            const container = document.getElementById('screenshots');
+            container.innerHTML = '';
+            if (Array.isArray(data.screenshots)) {
+                data.screenshots.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = `data:image/png;base64,${src}`;
+                    img.style.maxWidth = '400px';
+                    img.style.display = 'block';
+                    img.style.marginBottom = '10px';
+                    container.appendChild(img);
+                });
+            }
         });
     </script>
 </body>
