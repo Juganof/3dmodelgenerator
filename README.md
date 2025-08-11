@@ -1,7 +1,7 @@
 # Marktplaats Bot
 
-Automates searching for listings (e.g., broken coffee machines), evaluates them with
-Gemini, messages the seller, negotiates, and notifies when a deal is reached.
+Searches Marktplaats listings (e.g., broken coffee machines), ranks them with Google
+Gemini for repair & flip potential, and drafts friendly messages for sellers.
 
 > ⚠️ Use responsibly and check that automation is allowed by Marktplaats’s terms of service.
 
@@ -10,7 +10,7 @@ Gemini, messages the seller, negotiates, and notifies when a deal is reached.
 ```bash
 git clone <your_repo_url>
 cd <repo>
-cp .env.example .env   # fill in credentials and Gemini key
+cp .env.example .env   # fill in Gemini API key
 pip install -r requirements.txt
 ```
 
@@ -27,19 +27,18 @@ Deploy on Render:
 2. Create a Web Service on Render connected to the repo.
 3. Build command: `pip install -r requirements.txt`
 4. Start command: `gunicorn app:app`
-5. Add environment variables in Render dashboard (email, password, gemini key).
+5. Add `GEMINI_API_KEY` in Render dashboard.
 6. After deploy, open the service URL.
 
 ## Usage
 
 - Visit `/` and enter a keyword (e.g., “koffiemachine”).
-- The bot logs in, searches listings, uses Gemini to assess quality, and messages sellers.
-- Call `/check` periodically (or set a cron job) to poll for replies and continue
-  negotiation.
-- When a deal is reached, it prints a message (extend with email, Slack, etc.).
+- The app scrapes public search results, sends each listing to Gemini for an investment
+  rating and a suggested message.
+- Results show title, price, rating, link, and an AI-generated message to copy & paste
+  to the seller.
 
 ## Notes
 
-This is a minimal demonstration. You may need to adapt selectors, endpoints, or handling
-logic if Marktplaats changes its layout or security measures. The negotiation logic is
-simple and may require improvement for real-world use.
+This is a minimal demonstration. You may need to adapt selectors, prompts, or handling
+logic if Marktplaats changes its layout or if you target other items.

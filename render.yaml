@@ -6,9 +6,5 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
-      - key: MARKTPLAATS_EMAIL
-        sync: false
-      - key: MARKTPLAATS_PASSWORD
-        sync: false
       - key: GEMINI_API_KEY
         sync: false
