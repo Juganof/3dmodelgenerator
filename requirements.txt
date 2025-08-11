@@ -1,4 +1,6 @@
+Flask
+beautifulsoup4
+google-generativeai
+gunicorn
 python-dotenv
 requests
-Flask
-gunicorn
