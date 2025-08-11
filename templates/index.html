@@ -6,10 +6,43 @@
   </head>
   <body>
     <h1>Marktplaats Bot</h1>
-    <form action="/search" method="post">
+    <form id="search-form">
       <input type="text" name="keyword" placeholder="zoekwoord bv. koffiemachine" />
       <button type="submit">Search & Analyse</button>
     </form>
-    <p>Use /check endpoint to poll for negotiation status.</p>
+    <table id="results" border="1" style="margin-top:1em;">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Rating</th>
+          <th>Link</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <script>
+      const form = document.getElementById('search-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const resp = await fetch('/search', { method: 'POST', body: formData });
+        const data = await resp.json();
+        const tbody = document.querySelector('#results tbody');
+        tbody.innerHTML = '';
+        (data.results || []).forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.title}</td>
+            <td>€${item.price}</td>
+            <td>${item.rating}</td>
+            <td><a href="${item.link}" target="_blank">link</a></td>
+            <td><textarea rows="3" cols="40">${item.message}</textarea></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    </script>
   </body>
 </html>
